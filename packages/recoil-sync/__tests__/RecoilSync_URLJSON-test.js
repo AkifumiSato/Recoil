@@ -20,7 +20,6 @@ const {
   flushPromisesAndTimers,
   renderElements,
 } = require('recoil-shared/__test_utils__/Recoil_TestingUtils');
-const {act} = require('ReactTestUtils');
 const {
   array,
   bool,
@@ -159,57 +158,5 @@ describe('URL JSON Parse', () => {
       'nullfalse456"SET"[2,"b"]{"foo":[]}"1955-11-05T07:00:00.000Z"',
       '/?null=null&boolean=false&number=456&string="SET"&array=[2,"b"]&object={"foo":[]}&date="1955-11-05T07:00:00.000Z"',
       '/?null=null&boolean=false&number=456&string=%22SET%22&array=%5B2%2C%22b%22%5D&object=%7B%22foo%22%3A%5B%5D%7D&date=%221955-11-05T07%3A00%3A00.000Z%22&void=',
-    ));
-});
-
-type ScenarioOption = {
-  url: string,
-  contents: string,
-};
-
-async function testScenario(
-  loc: LocationOption,
-  prev: ScenarioOption,
-  next: ScenarioOption,
-) {
-  history.pushState(null, '', prev.url);
-  await flushPromisesAndTimers();
-
-  const container = renderElements(
-    <RecoilURLSyncJSON location={loc}>
-      <ReadsAtom atom={atomUndefined} />
-      <ReadsAtom atom={atomNull} />
-      <ReadsAtom atom={atomBoolean} />
-      <ReadsAtom atom={atomNumber} />
-      <ReadsAtom atom={atomString} />
-      <ReadsAtom atom={atomArray} />
-      <ReadsAtom atom={atomObject} />
-      <ReadsAtom atom={atomDate} />
-    </RecoilURLSyncJSON>,
-  );
-
-  expect(container.textContent).toBe(prev.contents);
-
-  history.pushState(null, '', next.url);
-  // await flushPromisesAndTimers();
-
-  expect(window.location.href).toBe(window.location.origin + next.url);
-  expect(container.textContent).toBe(next.contents);
-}
-
-describe('update scenario', () => {
-  test('Query Params', async () =>
-    testScenario(
-      {part: 'queryParams'},
-      {
-        url: '/?null=null&boolean=false&number=456&string="SET"&array=[2,"b"]&object={"foo":[]}&date="1955-11-05T07:00:00.000Z"',
-        contents:
-          'nullfalse456"SET"[2,"b"]{"foo":[]}"1955-11-05T07:00:00.000Z"',
-      },
-      {
-        url: '/',
-        contents:
-          'nulltrue123"STRING"[1,"a"]{"foo":[1,2]}"1985-10-26T07:00:00.000Z"',
-      },
     ));
 });

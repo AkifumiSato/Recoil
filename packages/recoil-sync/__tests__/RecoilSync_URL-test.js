@@ -11,6 +11,7 @@
 import type {LocationOption} from '../RecoilSync_URL';
 
 const {act} = require('ReactTestUtils');
+const {gotoURL} = require('../__test_utils__/RecoilSync_MockURLSerialization');
 const {atom} = require('Recoil');
 
 const {
@@ -369,14 +370,12 @@ describe('Test URL Persistence', () => {
       [loc2, {}],
     ]);
 
-    history.replaceState(
-      null,
-      '',
-      encodeURL([
+    await act(() =>
+      gotoURL([
         [
           loc1,
           {
-            'recoil-url-sync read/write upgrade type': 123,
+            'recoil-url-sync read/write upgrade type': 999,
             'OLD KEY': 'OLD',
             'recoil-url-sync read/write upgrade storage': 'STR1',
           },
@@ -389,7 +388,15 @@ describe('Test URL Persistence', () => {
         ],
       ]),
     );
-    expect(container.textContent).toBe('"123""OLD""STR2"');
+    expect(container.textContent).toBe('"999""OLD""STR2"');
+
+    await act(() =>
+      gotoURL([
+        [loc1, {}],
+        [loc2, {}],
+      ]),
+    );
+    expect(container.textContent).toBe('"DEFAULT""DEFAULT""DEFAULT"');
   });
 
   test('Persist default on read', async () => {
