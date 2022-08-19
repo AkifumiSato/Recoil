@@ -368,6 +368,28 @@ describe('Test URL Persistence', () => {
       [loc1, {}],
       [loc2, {}],
     ]);
+
+    history.replaceState(
+      null,
+      '',
+      encodeURL([
+        [
+          loc1,
+          {
+            'recoil-url-sync read/write upgrade type': 123,
+            'OLD KEY': 'OLD',
+            'recoil-url-sync read/write upgrade storage': 'STR1',
+          },
+        ],
+        [
+          loc2,
+          {
+            'recoil-url-sync read/write upgrade storage': 'STR2',
+          },
+        ],
+      ]),
+    );
+    expect(container.textContent).toBe('"123""OLD""STR2"');
   });
 
   test('Persist default on read', async () => {
